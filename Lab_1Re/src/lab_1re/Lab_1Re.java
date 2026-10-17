@@ -7,7 +7,8 @@ public class Lab_1Re {
 
    
     public static void main(String[] args) {
-          SwingUtilities.invokeLater(() -> new MainApp().setVisible(true)) ;
+           MainApp ventana = new MainApp();
+        ventana.setVisible(true);
     }
     
 }
