@@ -28,7 +28,16 @@ public class PalindromoAir {
     // INICIO PERSONA 1
     // Buscar el primer asiento libre con recursividad. Si no hay, devolver -1.
     public int firstAvailable(int index) {
+        if(index<0|| index >= CAPACIDAD){   
         return -1;
+        }
+        
+        if(asientos[index ]== null){
+            return index;
+        }
+        return firstAvailable(index +1);
+        
+        
     }
 
     // Persona 1: buscar con recursividad y devolver el indice o -1.
