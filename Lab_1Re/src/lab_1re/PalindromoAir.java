@@ -8,11 +8,12 @@ import java.util.Scanner;
 
 public class PalindromoAir {
 
-    // Valores comunes que pide el enunciado.
+ 
     public static final int CAPACIDAD = 30;
     public static final double PRECIO_BASE = 100;
     public static final double DESCUENTO = 0.20;
-
+    public static final int COLUMNAS = 6;
+    
     private Ticket asientos[];
     private JButton botonesAsientos[];
     private JTextArea consola;
@@ -30,13 +31,13 @@ public class PalindromoAir {
 
     // INICIO PERSONA 1
 
-    // Persona 1: buscar el primer asiento libre con recursividad.
+   
     public int firstAvailable(int index) {
         return -1;
     }
     
 
-    // Persona 1: buscar al pasajero con recursividad.
+    
     public int searchPassenger(String name, int index) {
         if (index < 0 || index >= CAPACIDAD) {
             return -1;
@@ -268,12 +269,37 @@ public class PalindromoAir {
 
     // Persona 3: mostrar codigo, nombre, monto y color del asiento.
     public void actualizarAsiento(int index) {
+         if (botonesAsientos == null || index < 0 || index >= botonesAsientos.length
+                || botonesAsientos[index] == null) {
+            return; 
+        }
+          JButton boton = botonesAsientos[index];
+        Ticket ticket = asientos[index];
+        boton.setOpaque(true);
 
+        if (ticket == null) {
+            // Asiento libre: solo el codigo y color verde
+            boton.setText(codigoAsiento(index));
+            boton.setBackground(new Color(200, 230, 200));
+        } else {
+            // Asiento ocupado: codigo, nombre y monto pagado
+            boton.setText("<html><center>" + codigoAsiento(index) + "<br>"
+                    + ticket.getNombre() + "<br>$"
+                    + String.format("%.2f", ticket.getMontoPagado()) + "</center></html>");
+            if (ticket.isPalindromo()) {
+                boton.setBackground(new Color(250, 220, 150)); // dorado: palindromo
+            } else {
+                boton.setBackground(new Color(250, 200, 200)); // rojo: precio completo
+            }
+        }
     }
 
     // Persona 3: convertir el indice en un codigo desde A1 hasta E6.
     public String codigoAsiento(int index) {
-        return "";
+        
+      char fila = (char) ('A' + index / COLUMNAS);
+        int columna = index % COLUMNAS + 1;
+        return "" + fila + columna;
     }
 
     public Ticket getTicket(int index) {
