@@ -9,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities ;
+import java.awt.GridLayout;
+import javax.swing.BorderFactory;
 
 
 public class MainApp extends JFrame {
@@ -17,6 +19,8 @@ public class MainApp extends JFrame {
    private JButton botonesAsientos[] = new JButton[PalindromoAir.CAPACIDAD];
     private JTextArea consola = new JTextArea();
     private PalindromoAir aerolinea ;
+    // cantodad columnas del avion 
+     private static final int COLUMNAS = 6;
        public MainApp() {
              setTitle("PalindromoAir - Sistema de venta de boletos | Vuelo PA-030");
         setSize(1000, 750);
@@ -39,11 +43,30 @@ public class MainApp extends JFrame {
         return panel;
     }
      // Zona del centro
-    private JPanel crearPanelAsientos() {
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.GREEN); // color temporal
+  private JPanel crearPanelAsientos() {
+        JPanel panel = new JPanel(new GridLayout(0, COLUMNAS, 8, 8));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        crearBotonAsiento(0, panel);
         return panel;
     }
+      private void crearBotonAsiento(int index, JPanel panel) {
+        if (index >= botonesAsientos.length) { // caso base: ya se crearon los 30
+            return;
+        }
+        char fila = (char) ('A' + index / COLUMNAS);   // A, B, C, D, E
+        int columna = index % COLUMNAS + 1;            // 1 a 6
+
+        JButton boton = new JButton(fila + "" + columna);
+        boton.setOpaque(true);
+        boton.setBackground(new Color(200, 230, 200)); // verde: disponible
+        boton.setFocusPainted(false);
+
+        botonesAsientos[index] = boton;
+        panel.add(boton);
+
+        crearBotonAsiento(index + 1, panel);           // paso recursivo
+    }
+
      // Zona de la derecha
     private JPanel crearPanelControles() {
         JPanel panel = new JPanel();
