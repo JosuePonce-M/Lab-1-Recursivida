@@ -39,7 +39,7 @@ public class MainApp extends JFrame {
    // Zona de arriba
     private JPanel crearPanelNorte() {
         JPanel panel = new JPanel();
-        panel.setBackground(Color.YELLOW); // color temporal
+        panel.setBackground(Color.YELLOW); 
         return panel;
     }
      // Zona del centro
@@ -64,7 +64,7 @@ public class MainApp extends JFrame {
         botonesAsientos[index] = boton;
         panel.add(boton);
 
-        crearBotonAsiento(index + 1, panel);           // paso recursivo
+        crearBotonAsiento(index + 1, panel);       
     }
 
      // Zona de la derecha
