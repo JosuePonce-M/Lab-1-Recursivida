@@ -44,17 +44,94 @@ public class PalindromoAir {
 
     // Persona 1: buscar al pasajero con recursividad.
     public int searchPassenger(String name, int index) {
-        return -1;
+      
+        if (name == null || index < 0 || index >= CAPACIDAD) {
+            return -1;
+        }
+        
+       
+        if (asientos[index] != null) {
+            if (asientos[index].getNombre().equalsIgnoreCase(name)) {
+                return index; 
+            }
+        }
+       
+        return searchPassenger(name, index + 1);
     }
 
     // Persona 1: revisar si el nombre es palindromo.
     public boolean isPalindromo(String name) {
-        return false;
+       if (name == null) {
+            return false;
+        }
+        String limpio = name.trim();
+        if (limpio.isEmpty()) {
+            return false;
+        }
+        return evaluarPalindromoRecursivo(limpio, 0, limpio.length() - 1);
+    
     }
+    private boolean evaluarPalindromoRecursivo(String texto, int inicio, int fin) {
+        if (inicio >= fin) {
+            return true;
+        }
+        char c1 = texto.charAt(inicio);
+        char c2 = texto.charAt(fin);
 
-    // Persona 1: validar los datos y vender el boleto.
+        if (!String.valueOf(c1).equalsIgnoreCase(String.valueOf(c2))) {
+            return false;
+        }
+
+        return evaluarPalindromoRecursivo(texto, inicio + 1, fin - 1);
+    }
+  
     public boolean sellTicket(String name) {
-        return false;
+       if (name == null || name.trim().isEmpty()) {
+            mostrarMensaje("Ingrese un nombre válido.");
+            return false;
+        }
+
+        int indiceLibre = firstAvailable(0);
+        if (indiceLibre == -1) {
+            mostrarMensaje("Avión lleno. No se puede vender el boleto.");
+            return false;
+        }
+
+        int indiceExistente = searchPassenger(name, 0);
+        if (indiceExistente != -1) {
+            mostrarMensaje("El pasajero ya tiene un asiento asignado.");
+            return false;
+        }
+
+        boolean palindromo = isPalindromo(name);
+
+        double montoPagado = PRECIO_BASE;
+        if (palindromo) {
+            montoPagado = PRECIO_BASE * (1.0 - DESCUENTO);
+        }
+
+        Ticket nuevoTicket = new Ticket(name, PRECIO_BASE, montoPagado, palindromo);
+
+        asientos[indiceLibre] = nuevoTicket;
+
+        if (botonesAsientos != null && indiceLibre < botonesAsientos.length && botonesAsientos[indiceLibre] != null) {
+            botonesAsientos[indiceLibre].setText(obtenerCodigo(indiceLibre));
+            botonesAsientos[indiceLibre].setOpaque(true);
+            if (palindromo) {
+                botonesAsientos[indiceLibre].setBackground(new Color(212, 175, 55)); // Dorado para palíndromo
+            } else {
+                botonesAsientos[indiceLibre].setBackground(Color.RED); // Rojo para precio normal
+            }
+        }
+
+        String codigo = obtenerCodigo(indiceLibre);
+        if (palindromo) {
+            mostrarMensaje("Vendido: "+ name + " en "+ codigo+ "  pago "+ String.format("%.2f", montoPagado)+ " palíndromo, 20% desc");
+        } else {
+            mostrarMensaje("Vendido: "+ name + " en " + codigo+ "  pago "+ String.format("%.2f", montoPagado) );
+        }
+
+        return true;
     }
 
     // FIN PERSONA 1
