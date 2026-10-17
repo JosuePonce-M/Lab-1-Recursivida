@@ -1,7 +1,6 @@
 
 package lab_1re;
 
-import javax.swing.SwingUtilities;
 
 public class Lab_1Re {
 
