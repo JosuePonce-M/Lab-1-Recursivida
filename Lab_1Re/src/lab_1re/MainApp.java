@@ -13,11 +13,15 @@ import javax.swing.SwingUtilities ;
 public class MainApp extends JFrame {
 
     // botones
-    private JButton botonesAsientos[] = new JButton[PalindromoAir.CAPACIDAD];
+   private JButton botonesAsientos[] = new JButton[PalindromoAir.CAPACIDAD];
     private JTextArea consola = new JTextArea();
-    private     PalindromoAir aerolinea;
-
+    private PalindromoAir aerolinea ;
        public MainApp() {
+             setTitle("PalindromoAir - Sistema de venta de boletos | Vuelo PA-030");
+        setSize(1000, 750);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout()) ;
         aerolinea = new PalindromoAir(botonesAsientos, consola);
     }
 
