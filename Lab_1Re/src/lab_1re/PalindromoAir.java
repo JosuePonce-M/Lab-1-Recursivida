@@ -1,12 +1,15 @@
 package lab_1re;
-
+//ANGILI RELINA PALACIOS GOMEZ 62611135
+//JOSUE PONCE MARADIAGA 22611140
+//JORGE LOPEZ RIVERA 22551004
 import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 
 public class PalindromoAir {
 
-    // Valores comunes que pide el enunciado.
+  
+    
     public static final int CAPACIDAD = 30;
     public static final double PRECIO_BASE = 100;
     public static final double DESCUENTO = 0.20;
@@ -42,7 +45,7 @@ public class PalindromoAir {
         
     }
 
-    // Persona 1: buscar al pasajero con recursividad.
+    
     public int searchPassenger(String name, int index) {
       
         if (name == null || index < 0 || index >= CAPACIDAD) {
@@ -59,7 +62,7 @@ public class PalindromoAir {
         return searchPassenger(name, index + 1);
     }
 
-    // Persona 1: revisar si el nombre es palindromo.
+   
     public boolean isPalindromo(String name) {
        if (name == null) {
             return false;
@@ -107,7 +110,7 @@ public class PalindromoAir {
 
         double montoPagado = PRECIO_BASE;
         if (palindromo) {
-            montoPagado = PRECIO_BASE * (1.0 - DESCUENTO);
+            montoPagado = PRECIO_BASE *(1.0-DESCUENTO);
         }
 
         Ticket nuevoTicket = new Ticket(name, PRECIO_BASE, montoPagado, palindromo);
