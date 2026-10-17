@@ -8,12 +8,11 @@ import java.util.Scanner;
 
 public class PalindromoAir {
 
- 
     public static final int CAPACIDAD = 30;
     public static final double PRECIO_BASE = 100;
     public static final double DESCUENTO = 0.20;
     public static final int COLUMNAS = 6;
-    
+
     private Ticket asientos[];
     private JButton botonesAsientos[];
     private JTextArea consola;
@@ -24,37 +23,42 @@ public class PalindromoAir {
         this.consola = consola;
     }
 
-    // Para probar persona 2 con boletos ya preparados.
+   
     public PalindromoAir(Ticket asientos[]) {
         this.asientos = asientos;
     }
 
     // INICIO PERSONA 1
 
-   
+    // Persona 1: buscar el primer asiento libre con recursividad.
     public int firstAvailable(int index) {
-        return -1;
+        if (index < 0 || index >= CAPACIDAD) { 
+        }
+        if (asientos[index] == null) {      
+            return index;
+        }
+        return firstAvailable(index + 1);     
     }
-    
 
     
+    // Persona 1: buscar al pasajero con recursividad.
     public int searchPassenger(String name, int index) {
         if (index < 0 || index >= CAPACIDAD) {
             return -1;
         }
-        
-       
         if (asientos[index] != null) {
             String nombreNormalizadoActual = normalizarTexto(asientos[index].getNombre());
             String nombreBuscado = normalizarTexto(name);
-            
+
             if (nombreNormalizadoActual.equals(nombreBuscado)) {
-                return index; 
+                return index;
             }
-    }
+        }
         return searchPassenger(name, index + 1);
     }
+
     
+    // Deja el texto en minusculas, sin tildes, sin espacios ni signos
     private String normalizarTexto(String texto) {
         if (texto == null) return "";
         String sinMayusculas = texto.toLowerCase();
@@ -66,12 +70,73 @@ public class PalindromoAir {
 
     // Persona 1: revisar si el nombre es palindromo.
     public boolean isPalindromo(String name) {
-        return false;
+        String texto = normalizarTexto(name);  
+        if (texto.equals("")) {               
+            return false;
+        }
+        return compararExtremos(texto, 0, texto.length() - 1);
+    }
+
+    
+    private boolean compararExtremos(String texto, int inicio, int fin) {
+        if (inicio >= fin) {                   // caso base
+            return true;
+        }
+        if (texto.charAt(inicio) != texto.charAt(fin)) { // caso base
+            return false;
+        }
+        return compararExtremos(texto, inicio + 1, fin - 1); // paso recursivo
     }
 
     // Persona 1: validar los datos y vender el boleto.
     public boolean sellTicket(String name) {
-        return false;
+        // 1. 
+        if (normalizarTexto(name).equals("")) {
+            mostrarMensaje("Ingrese un nombre válido.");
+            return false;
+        }
+
+        // 2. Debe haber asientos disponibles
+        int posicion = firstAvailable(0);
+        if (posicion == -1) {
+            mostrarMensaje("Avión lleno. No se puede vender el boleto.");
+            return false;
+        }
+
+        // 3. El pasajero no puede estar ya registrado
+        if (searchPassenger(name, 0) != -1) {
+            mostrarMensaje("El pasajero ya tiene un asiento asignado.");
+            return false;
+        }
+
+        // 4. 
+        boolean palindromo = isPalindromo(name);
+
+        // 5. Calcular el monto final
+        double montoPagado = PRECIO_BASE;
+        if (palindromo) {
+            montoPagado = PRECIO_BASE * (1 - DESCUENTO);
+        }
+
+        // 6. Crear el ticket y asignarlo al primer asiento libre
+        Ticket ticket = new Ticket(name, PRECIO_BASE, montoPagado, palindromo);
+        asientos[posicion] = ticket;
+
+        // 7. Pintar el asiento 
+        actualizarAsiento(posicion);
+
+        // 8. Mensaje de confirmacion
+        String monto = String.format("%.2f", montoPagado);
+        if (palindromo) {
+            long porcentaje = Math.round(DESCUENTO * 100);
+            mostrarMensaje("Vendido: " + name + " en " + codigoAsiento(posicion)
+                    + ", pagó $" + monto + " (palíndromo, " + porcentaje
+                    + "% de descuento).");
+        } else {
+            mostrarMensaje("Vendido: " + name + " en " + codigoAsiento(posicion)
+                    + ", pagó $" + monto + ".");
+        }
+        return true;
     }
 
     // FIN PERSONA 1
@@ -97,9 +162,10 @@ public class PalindromoAir {
             if(boleto.isPalindromo()) {
                 palindromo = "Si";
             }
+            
             mostrarMensaje(obtenerCodigo(index) + " - " + boleto.getNombre()
-                    + " - Pagado: $" + boleto.getMontoPagado()
-                    + " - Original: $" + boleto.getMontoOriginal()
+                    + " - Pagado: $" + String.format("%.2f", boleto.getMontoPagado())
+                    + " - Original: $" + String.format("%.2f", boleto.getMontoOriginal())
                     + " - Palindromo: " + palindromo);
             hayPasajeros = true;
         }
@@ -118,7 +184,7 @@ public class PalindromoAir {
         return pago + income(index + 1);
     }
 
-    // Persona 2: liberar los asientos con recursividad.
+    // Persona 2: 
     public void reset(int index) {
         if(index < 0 || index >= asientos.length) {
             return;
@@ -146,8 +212,9 @@ public class PalindromoAir {
         double reembolso = asientos[posicion].getMontoPagado();
         asientos[posicion] = null;
         pintarLibre(posicion);
+       
         mostrarMensaje("Cancelado: " + pasajero + ". Reembolso de $"
-                + reembolso + ".");
+                + String.format("%.2f", reembolso) + ".");
         return true;
     }
 
@@ -173,14 +240,15 @@ public class PalindromoAir {
         if(confirmar) {
             double total = income(0);
             reset(0);
-            mostrarMensaje("Ingresos totales: $" + total
-                    + " Vuelo despachado, asientos reiniciados.");
+            // CAMBIO: 
+            mostrarMensaje("Ingresos totales: $" + String.format("%.2f", total)
+                    + ". Vuelo despachado, asientos reiniciados.");
         } else {
             mostrarMensaje("cancelado.");
         }
     }
 
-    // Persona 2: buscar sin usar el metodo de persona 1.
+    // Persona 2: 
     private int buscarParaCancelar(String nombre, int index) {
         if(index >= asientos.length) {
             return -1;
@@ -194,7 +262,7 @@ public class PalindromoAir {
         return buscarParaCancelar(nombre, index + 1);
     }
 
-    // Persona 2: quitar tildes y guardar solamente las letras.
+    // Persona 2: 
     private String limpiarParaCancelar(String nombre) {
         if(nombre == null) {
             return "";
@@ -246,19 +314,16 @@ public class PalindromoAir {
     }
 
     // Persona 2: actualizar el boton si ya existe la ventana.
+   
     private void pintarLibre(int index) {
         if(botonesAsientos != null && index < botonesAsientos.length) {
-            if(botonesAsientos[index] != null) {
-                botonesAsientos[index].setText(obtenerCodigo(index));
-                botonesAsientos[index].setOpaque(true);
-                botonesAsientos[index].setBackground(Color.GREEN);
-            }
+            actualizarAsiento(index);
         }
     }
 
     // FIN PERSONA 2
 
-    // Base comun: agregar mensajes sin borrar los anteriores.
+    
     public void mostrarMensaje(String mensaje) {
         if(consola != null) {
             consola.append(mensaje + "\n");
@@ -269,7 +334,6 @@ public class PalindromoAir {
 
     // Persona 3: mostrar codigo, nombre, monto y color del asiento.
     public void actualizarAsiento(int index) {
-       
         if (botonesAsientos == null || botonesAsientos[index] == null) {
             return;
         }
@@ -280,7 +344,7 @@ public class PalindromoAir {
             boton.setText(codigoAsiento(index));
             boton.setBackground(new Color(200, 230, 200)); // verde
         } else {
-            
+           
             boton.setText("<html>" + codigoAsiento(index) + "<br>"
                     + ticket.getNombre() + "<br>$"
                     + String.format("%.2f", ticket.getMontoPagado()) + "</html>");
@@ -291,11 +355,17 @@ public class PalindromoAir {
             }
         }
     }
-    // Persona 3: convertir el indice en un codigo desde A1 hasta E6.
-      public String codigoAsiento(int index) {
+
+    // Persona 3: 
+    public String codigoAsiento(int index) {
         String letras = "ABCDE";
         int fila = index / COLUMNAS;
         int columna = index % COLUMNAS + 1;
         return "" + letras.charAt(fila) + columna;
+    }
+
+   
+    public Ticket getTicket(int index) {
+        return asientos[index];
     }
 }
