@@ -1,5 +1,5 @@
 package lab_1re;
-
+import java.text.Normalizer;
 import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
@@ -34,10 +34,33 @@ public class PalindromoAir {
     public int firstAvailable(int index) {
         return -1;
     }
+    
 
     // Persona 1: buscar al pasajero con recursividad.
     public int searchPassenger(String name, int index) {
-        return -1;
+        if (index < 0 || index >= CAPACIDAD) {
+            return -1;
+        }
+        
+       
+        if (asientos[index] != null) {
+            String nombreNormalizadoActual = normalizarTexto(asientos[index].getNombre());
+            String nombreBuscado = normalizarTexto(name);
+            
+            if (nombreNormalizadoActual.equals(nombreBuscado)) {
+                return index; 
+            }
+    }
+        return searchPassenger(name, index + 1);
+    }
+    
+    private String normalizarTexto(String texto) {
+        if (texto == null) return "";
+        String sinMayusculas = texto.toLowerCase();
+        String sinTildes = Normalizer.normalize(sinMayusculas, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        String soloLetrasYNumeros = sinTildes.replaceAll("[^a-z0-9]", "");
+        return soloLetrasYNumeros;
     }
 
     // Persona 1: revisar si el nombre es palindromo.
