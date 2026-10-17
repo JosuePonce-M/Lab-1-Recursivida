@@ -3,6 +3,8 @@ import java.text.Normalizer;
 import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
+import javax.swing.JOptionPane;
+import java.util.Scanner;
 
 public class PalindromoAir {
 
@@ -30,16 +32,7 @@ public class PalindromoAir {
 
     // Persona 1: buscar el primer asiento libre con recursividad.
     public int firstAvailable(int index) {
-        if(index<0|| index >= CAPACIDAD){   
         return -1;
-        }
-        
-        if(asientos[index ]== null){
-            return index;
-        }
-        return firstAvailable(index +1);
-        
-        
     }
     
 
@@ -159,6 +152,31 @@ public class PalindromoAir {
 
     // Persona 2: confirmar antes de despachar.
     public void dispatch() {
+        boolean confirmar = false;
+        if(consola == null) {
+            System.out.println("Despachar el vuelo? Escriba S para confirmar:");
+            Scanner s = new Scanner(System.in);
+            String respuesta = s.nextLine();
+            respuesta = respuesta.toUpperCase();
+            if(respuesta.equals("S")) {
+                confirmar = true;
+            }
+        } else {
+            int opcion = JOptionPane.showConfirmDialog(null, "Despachar el vuelo?",
+                    "Confirmar", JOptionPane.YES_NO_OPTION);
+            if(opcion == JOptionPane.YES_OPTION) {
+                confirmar = true;
+            }
+        }
+
+        if(confirmar) {
+            double total = income(0);
+            reset(0);
+            mostrarMensaje("Ingresos totales: $" + total
+                    + " Vuelo despachado, asientos reiniciados.");
+        } else {
+            mostrarMensaje("cancelado.");
+        }
     }
 
     // Persona 2: buscar sin usar el metodo de persona 1.
