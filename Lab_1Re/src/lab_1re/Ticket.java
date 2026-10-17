@@ -9,7 +9,11 @@ public class Ticket {
 
     // Persona 1: completar el constructor guardando los cuatro datos recibidos.
     public Ticket(String nombre, double montoOriginal, double montoPagado, boolean palindromo) {
-
+       this.nombre = nombre;
+        this.montoOriginal = montoOriginal;
+        this.montoPagado = montoPagado;
+        this.palindromo = palindromo;
+         
     }
 
     // Estos getters ya estan listos. Los usan las otras personas.
