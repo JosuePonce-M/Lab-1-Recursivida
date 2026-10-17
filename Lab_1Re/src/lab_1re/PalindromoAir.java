@@ -1,51 +1,58 @@
 package lab_1re;
 
+import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 
 public class PalindromoAir {
 
-    // Base comun: usar estos mismos valores en todo el programa.
+    // Valores comunes que pide el enunciado.
     public static final int CAPACIDAD = 30;
     public static final double PRECIO_BASE = 100;
     public static final double DESCUENTO = 0.20;
 
-    // Base comun: null significa que el asiento esta libre.
     private Ticket asientos[];
     private JButton botonesAsientos[];
     private JTextArea consola;
 
-    // Este constructor ya prepara los datos compartidos.
     public PalindromoAir(JButton botonesAsientos[], JTextArea consola) {
         asientos = new Ticket[CAPACIDAD];
         this.botonesAsientos = botonesAsientos;
         this.consola = consola;
     }
 
-    // Los return actuales son temporales. Cada persona debe completar sus metodos.
-    // Los seis metodos recursivos del PDF deben llevar caso base y paso recursivo, sin ciclos.
-
-    // INICIO PERSONA 1
-    // Buscar el primer asiento libre con recursividad. Si no hay, devolver -1.
-    public int firstAvailable(int index) {
-        return -1;
+    // Para probar persona 2 con boletos ya preparados.
+    public PalindromoAir(Ticket asientos[]) {
+        this.asientos = asientos;
     }
 
-    // Persona 1: buscar con recursividad y devolver el indice o -1.
-    // Ignorar asientos vacios y diferencias de mayusculas, tildes y espacios.
+    // INICIO PERSONA 1
+
+    // Persona 1: buscar el primer asiento libre con recursividad.
+    public int firstAvailable(int index) {
+        if(index<0|| index >= CAPACIDAD){   
+        return -1;
+        }
+        
+        if(asientos[index ]== null){
+            return index;
+        }
+        return firstAvailable(index +1);
+        
+        
+    }
+
+    // Persona 1: buscar al pasajero con recursividad.
     public int searchPassenger(String name, int index) {
         return -1;
     }
 
-    // Persona 1: revisar el nombre con recursividad. Puede agregar un auxiliar.
-    // Ignorar mayusculas, tildes, espacios y signos. Vacio debe dar false.
+    // Persona 1: revisar si el nombre es palindromo.
     public boolean isPalindromo(String name) {
         return false;
     }
 
-    // Persona 1: validar nombre, revisar espacio y evitar pasajeros repetidos.
-    // Aplicar descuento si corresponde, crear Ticket y ocupar el primer libre.
-    // Actualizar el asiento y mostrar el resultado. Devolver true o false.
+    // Persona 1: validar los datos y vender el boleto.
     public boolean sellTicket(String name) {
         return false;
     }
@@ -53,54 +60,181 @@ public class PalindromoAir {
     // FIN PERSONA 1
 
     // INICIO PERSONA 2
-    // Mostrar los datos de cada pasajero con recursividad.
-    // Si no hay pasajeros, mostrar "Sin pasajeros registrados".
+
+    // Persona 2: mostrar los pasajeros registrados.
     public void printPassengers(int index) {
-
+        printPassengers(index, false);
     }
 
-    // Persona 2: sumar con recursividad lo pagado por los tickets vigentes.
+    private void printPassengers(int index, boolean hayPasajeros) {
+        if(index < 0 || index >= asientos.length) {
+            if(!hayPasajeros) {
+                mostrarMensaje("Sin pasajeros registrados");
+            }
+            return;
+        }
+
+        if(asientos[index] != null) {
+            Ticket boleto = asientos[index];
+            String palindromo = "No";
+            if(boleto.isPalindromo()) {
+                palindromo = "Si";
+            }
+            mostrarMensaje(obtenerCodigo(index) + " - " + boleto.getNombre()
+                    + " - Pagado: $" + boleto.getMontoPagado()
+                    + " - Original: $" + boleto.getMontoOriginal()
+                    + " - Palindromo: " + palindromo);
+            hayPasajeros = true;
+        }
+        printPassengers(index + 1, hayPasajeros);
+    }
+
+    // Persona 2: sumar los pagos con recursividad.
     public double income(int index) {
-        return 0;
+        if(index < 0 || index >= asientos.length) {
+            return 0;
+        }
+        if(asientos[index] == null) {
+            return income(index + 1);
+        }
+        double pago = asientos[index].getMontoPagado();
+        return pago + income(index + 1);
     }
 
-    // Persona 2: liberar los asientos con recursividad y actualizar cada boton.
+    // Persona 2: liberar los asientos con recursividad.
     public void reset(int index) {
-
+        if(index < 0 || index >= asientos.length) {
+            return;
+        }
+        asientos[index] = null;
+        pintarLibre(index);
+        reset(index + 1);
     }
 
-    // Persona 2: buscar al pasajero, guardar su reembolso y liberar el asiento.
-    // Actualizar el boton, mostrar el resultado y devolver true o false.
+    // Persona 2: cancelar el boleto y mostrar el reembolso.
     public boolean cancelTicket(String name) {
-        return false;
+        String nombre = limpiarParaCancelar(name);
+        if(nombre.equals("")) {
+            mostrarMensaje("Ingrese un nombre valido.");
+            return false;
+        }
+
+        int posicion = buscarParaCancelar(nombre, 0);
+        if(posicion == -1) {
+            mostrarMensaje("No se encontro al pasajero. No se pudo cancelar.");
+            return false;
+        }
+
+        String pasajero = asientos[posicion].getNombre();
+        double reembolso = asientos[posicion].getMontoPagado();
+        asientos[posicion] = null;
+        pintarLibre(posicion);
+        mostrarMensaje("Cancelado: " + pasajero + ". Reembolso de $"
+                + reembolso + ".");
+        return true;
     }
 
-    // Persona 2: pedir confirmacion. Si acepta, calcular ingresos antes de reset.
-    // Mostrar el total y reiniciar los asientos. Si no acepta, no cambiar nada.
+    // Persona 2: confirmar antes de despachar.
     public void dispatch() {
+    }
 
+    // Persona 2: buscar sin usar el metodo de persona 1.
+    private int buscarParaCancelar(String nombre, int index) {
+        if(index >= asientos.length) {
+            return -1;
+        }
+        if(asientos[index] != null) {
+            String registrado = limpiarParaCancelar(asientos[index].getNombre());
+            if(registrado.equals(nombre)) {
+                return index;
+            }
+        }
+        return buscarParaCancelar(nombre, index + 1);
+    }
+
+    // Persona 2: quitar tildes y guardar solamente las letras.
+    private String limpiarParaCancelar(String nombre) {
+        if(nombre == null) {
+            return "";
+        }
+
+        nombre = nombre.toLowerCase();
+        String limpio = "";
+
+        for(int i=0; i<nombre.length(); i++) {
+            char letra = nombre.charAt(i);
+
+            switch(letra) {
+                case 'á':
+                    letra = 'a';
+                    break;
+                case 'é':
+                    letra = 'e';
+                    break;
+                case 'í':
+                    letra = 'i';
+                    break;
+                case 'ó':
+                    letra = 'o';
+                    break;
+                case 'ú':
+                case 'ü':
+                    letra = 'u';
+                    break;
+                case 'ñ':
+                    letra = 'n';
+                    break;
+            }
+
+            if(letra >= 'a' && letra <= 'z') {
+                limpio = limpio + letra;
+            }
+        }
+
+        return limpio;
+    }
+
+    // Persona 2: obtener el codigo sin usar el metodo de persona 3.
+    private String obtenerCodigo(int index) {
+        String letras = "ABCDE";
+        int fila = index / 6;
+        int columna = index % 6 + 1;
+        String codigo = "" + letras.charAt(fila) + columna;
+        return codigo;
+    }
+
+    // Persona 2: actualizar el boton si ya existe la ventana.
+    private void pintarLibre(int index) {
+        if(botonesAsientos != null && index < botonesAsientos.length) {
+            if(botonesAsientos[index] != null) {
+                botonesAsientos[index].setText(obtenerCodigo(index));
+                botonesAsientos[index].setOpaque(true);
+                botonesAsientos[index].setBackground(Color.GREEN);
+            }
+        }
     }
 
     // FIN PERSONA 2
 
-    // Base comun: este metodo ya agrega mensajes sin borrar los anteriores.
+    // Base comun: agregar mensajes sin borrar los anteriores.
     public void mostrarMensaje(String mensaje) {
-        consola.append(mensaje + "\n");
+        if(consola != null) {
+            consola.append(mensaje + "\n");
+        } else {
+            System.out.println(mensaje);
+        }
     }
 
-    // Persona 3: actualizar solo el boton de este indice segun su ticket.
-    // Libre: verde. Ocupado: rojo. Palindromo: dorado.
-    // Si esta ocupado, mostrar codigo, nombre y monto pagado.
+    // Persona 3: mostrar codigo, nombre, monto y color del asiento.
     public void actualizarAsiento(int index) {
 
     }
 
-    // Persona 3: convertir el indice al codigo del asiento: 0 es A1 y 29 es E6.
+    // Persona 3: convertir el indice en un codigo desde A1 hasta E6.
     public String codigoAsiento(int index) {
         return "";
     }
 
-    // Base comun: ya permite consultar los datos de un asiento.
     public Ticket getTicket(int index) {
         return asientos[index];
     }
