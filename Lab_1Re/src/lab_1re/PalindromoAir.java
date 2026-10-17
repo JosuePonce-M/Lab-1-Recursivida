@@ -269,40 +269,33 @@ public class PalindromoAir {
 
     // Persona 3: mostrar codigo, nombre, monto y color del asiento.
     public void actualizarAsiento(int index) {
-         if (botonesAsientos == null || index < 0 || index >= botonesAsientos.length
-                || botonesAsientos[index] == null) {
-            return; 
+       
+        if (botonesAsientos == null || botonesAsientos[index] == null) {
+            return;
         }
-          JButton boton = botonesAsientos[index];
+        JButton boton = botonesAsientos[index];
         Ticket ticket = asientos[index];
-        boton.setOpaque(true);
 
         if (ticket == null) {
-            // Asiento libre: solo el codigo y color verde
             boton.setText(codigoAsiento(index));
-            boton.setBackground(new Color(200, 230, 200));
+            boton.setBackground(new Color(200, 230, 200)); // verde
         } else {
-            // Asiento ocupado: codigo, nombre y monto pagado
-            boton.setText("<html><center>" + codigoAsiento(index) + "<br>"
+            
+            boton.setText("<html>" + codigoAsiento(index) + "<br>"
                     + ticket.getNombre() + "<br>$"
-                    + String.format("%.2f", ticket.getMontoPagado()) + "</center></html>");
+                    + String.format("%.2f", ticket.getMontoPagado()) + "</html>");
             if (ticket.isPalindromo()) {
-                boton.setBackground(new Color(250, 220, 150)); // dorado: palindromo
+                boton.setBackground(new Color(250, 220, 150)); // dorado
             } else {
-                boton.setBackground(new Color(250, 200, 200)); // rojo: precio completo
+                boton.setBackground(new Color(250, 200, 200)); // rojo
             }
         }
     }
-
     // Persona 3: convertir el indice en un codigo desde A1 hasta E6.
-    public String codigoAsiento(int index) {
-        
-      char fila = (char) ('A' + index / COLUMNAS);
+      public String codigoAsiento(int index) {
+        String letras = "ABCDE";
+        int fila = index / COLUMNAS;
         int columna = index % COLUMNAS + 1;
-        return "" + fila + columna;
-    }
-
-    public Ticket getTicket(int index) {
-        return asientos[index];
+        return "" + letras.charAt(fila) + columna;
     }
 }
